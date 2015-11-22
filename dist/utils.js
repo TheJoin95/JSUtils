@@ -1,48 +1,86 @@
 /*!
- * JSUtils Library
- * https://github.com/UstymUkhman/JSUtils
  *
+ * JSUtils - Useful JavaScript functions for JS purists and JQuery haters
  *
- * Copyright 2015, by Ustym Ukhman
- * Released under the MIT license
+ * @version v0.0.1
+ * @link https://github.com/UstymUkhman
+ * @author Ustym Ukhman <ustym.ukhman@gmail.com>
+ * @license MIT License, https://github.com/UstymUkhman/JSUtils/blob/master/LICENSE
  *
  * Date: 2015-11-21T13:28Z
  */
 
-/**
- * Utils class definition
- *
- * @namespace {Class} Utils
- * @class
- * @classdesc This is the core of JSUtils library
- * @constructs Utils
- * @global
- */
-var Utils = (function() {
+;(function() {
 	'use strict';
-
-	/**
-	 * Utils class constructor function
-	 *
-	 * @lends Utils.prototype
-	 * @function Utils
-	 * @memberof Utils
-	 * @global
-	 */
-	var Utils = function() { },
 
 	/**
 	 * Checks if the passed parameter is a function and executes it if so
 	 *
 	 * @param {function|*} fn
 	 * @function checkFn
-	 * @memberof Utils
-	 * @private
+	 * @local
 	 * @returns {*} function's return value | passed value
 	 */
-	checkFn = function( fn ) {
+	function checkFn( fn ) {
 		return ( typeof fn === 'function' ) ? fn() : fn;
-	};
+	}
+
+	/**
+	 * Utils class definition
+	 *
+	 * @namespace {Class} Utils
+	 * @class
+	 * @classdesc This is the core of JSUtils library
+	 * @constructs Utils
+	 * @global
+	 */
+	var Utils = (function() {
+
+		/**
+		 * Utils class constructor function
+		 *
+		 * @lends Utils.prototype
+		 * @function Utils
+		 * @memberof Utils
+		 * @global
+		 */
+		var Utils = function() { };
+
+		/**
+		 * Parses to an integer number the passed element
+		 * Parsing rules:
+		 *
+		 * empty object 			  - 0
+		 * not empty object 		  - 1
+		 * number < 0 				  - 0
+		 * number > 0 				  - number value
+		 * empty string 			  - 0
+		 * not empty string 		  - string value
+		 * true 					  - 1
+		 * undefined || null || false - 0
+		 *
+		 * @function toNumber
+		 * @param {Object|function|number|string|boolean|*[]} n
+		 * @memberof Utils
+		 * @public
+		 * @returns {number} casted from n.
+		 * @see Object.prototype.isEmpty()
+		 * @see String.prototype.toNumber()
+		 */
+		Utils.prototype.toNumber = function( n ) {
+			n = checkFn( n );
+
+			switch( typeof n ) {
+				case 'object'   : return n === null || n.isEmpty() ? 0 : n.length ? n.length : 1;
+				case 'number'   : return n < 0 ? 0 : n;
+				case 'string'   : return n.toNumber();
+				case 'boolean'  : return n ? 1 : 0;
+				default		    : return 0;
+			}
+		};
+
+		return Utils;
+	})();
 
 	/**
 	 * Parses to number the current string value
@@ -84,7 +122,7 @@ var Utils = (function() {
 	 * @global
 	 * @returns {string} s without the 'f' substring.
 	 * @returns {number} -1 if 'c' is true, and nothing was replaced.
-	 * @see String.prototype.replace()
+	 * @see String.replace()
 	 */
 	String.prototype.replaceAll = function( f, r, c ) {
 		f = checkFn( f );
@@ -112,15 +150,8 @@ var Utils = (function() {
 		if( typeof i1 === 'string' && i1 !== '' ) e1 = i1.toNumber();
 		if( typeof i2 === 'string' && i2 !== '' ) e2 = i2.toNumber();
 
-		if( e1 === -1 || this[i1] === undefined ) {
-			console.error( 'No element with index \'' + i1 + '\' was found in array.' );
-			return;
-		}
-
-		if( e2 === -1 || this[i2] === undefined ) {
-			console.error( 'No element with index \'' + i2 + '\' was found in array.' );
-			return;
-		}
+		if( e1 === -1 || this[i1] === undefined ) { console.error( 'No element with index \'' + i1 + '\' was found in array.' ); return; }
+		if( e2 === -1 || this[i2] === undefined ) { console.error( 'No element with index \'' + i2 + '\' was found in array.' ); return; }
 
 		var e = this[i1];
 		this[i1] = this[i2];
@@ -158,43 +189,75 @@ var Utils = (function() {
 	 * @memberof Object
 	 * @global
 	 * @returns {boolean} false if the object is empty | true otherwise
+	 * @see Object.keys()
 	 */
 	Object.prototype.isEmpty = function() {
 		return !Object.keys( this ).length;
 	};
 
 	/**
-	 * Parses to an integer number the passed element
-	 * Parsing rules:
+	 * Extends the current object is with the passad one
 	 *
-	 * empty object 			  - 0
-	 * not empty object 		  - 1
-	 * number < 0 				  - 0
-	 * number > 0 				  - number value
-	 * empty string 			  - 0
-	 * not empty string 		  - string value
-	 * true 					  - 1
-	 * undefined || null || false - 0
-	 *
-	 * @function toNumber
-	 * @param {Object|function|number|string|boolean|*[]} n
-	 * @memberof Utils
-	 * @public
-	 * @returns {number} casted from n.
-	 * @see Object.prototype.isEmpty()
-	 * @see String.prototype.toNumber()
+	 * @param {Object} obj
+	 * @param {boolean} owrr
+	 * @function extend
+	 * @memberof Object
+	 * @global
 	 */
-	Utils.prototype.toNumber = function( n ) {
-		n = checkFn( n );
+	Object.prototype.extend = function( obj, owrr ) {
+		var ext = { };
+		obj  = checkFn( obj );
+		owrr = checkFn( owrr );
 
-		switch( typeof n ) {
-			case 'object'   : return n === null || n.isEmpty() ? 0 : n.length ? n.length : 1;
-			case 'number'   : return n < 0 ? 0 : n;
-			case 'string'   : return n.toNumber();
-			case 'boolean'  : return n ? 1 : 0;
-			default		    : return 0;
+		if( typeof obj !== 'object' ) { console.error( 'Element \'' + obj + '\' is not an object.' ); return; }
+
+		for( var i in obj ) {
+			// if( typeof obj[i] !== 'function' )
+			
+			if( this[i] !== undefined && owrr ) console.warn( 'Element \'' + i + '\' was overwritten becaus already existed.' );
+			else if( this[i] !== undefined ) { console.error( 'Element \'' + i + '\' already exist.' ); return; }
+			ext[i] = obj[i];
 		}
+
+		for( var i in ext ) this[i] = ext[i];
 	};
 
-	return Utils;
+	/**
+	 * Gets the list of object's properties (functions excluded)
+	 *
+	 * @function getProperties
+	 * @memberof Object
+	 * @global
+	 * @returns {string[]} array of properties' names
+	 * @see Object.getOwnPropertyNames()
+	 */
+	Object.prototype.getProperties = function() {
+		var prop = [];
+
+		for( var i in this )
+			if( typeof this[i] !== 'function' )
+				prop.push( i );
+
+		return prop;
+	};
+
+	/**
+	 * Gets the list of object's functions
+	 *
+	 * @function getMethods
+	 * @memberof Object
+	 * @global
+	 * @returns {string[]} array of functions' names
+	 * @see Object.getOwnPropertyNames()
+	 */
+	Object.prototype.getMethods = function() {
+		var prop = [];
+
+		for( var i in this )
+			if( typeof this[i] === 'function' )
+				prop.push( i );
+
+		return prop;
+	};
+
 })();

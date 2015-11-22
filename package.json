@@ -1,13 +1,13 @@
 {
   "name": "JSUtils",
   "version": "1.0.0",
+  "main": "./dist/utils.js",
   "author": "https://github.com/UstymUkhman/JSUtils/graphs/contributors",
   "license": {
     "type": "MIT",
     "url": "https://github.com/UstymUkhman/JSUtils/blob/master/LICENSE"
   },
   "homepage": "https://github.com/UstymUkhman/JSUtils",
-  "main": "./dist/utils.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/UstymUkhman/JSUtils.git"
