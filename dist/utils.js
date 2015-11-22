@@ -26,63 +26,6 @@
 	}
 
 	/**
-	 * Utils class definition
-	 *
-	 * @namespace {Class} Utils
-	 * @class
-	 * @classdesc This is the core of JSUtils library
-	 * @constructs Utils
-	 * @global
-	 */
-	var Utils = (function() {
-
-		/**
-		 * Utils class constructor function
-		 *
-		 * @lends Utils.prototype
-		 * @function Utils
-		 * @memberof Utils
-		 * @global
-		 */
-		var Utils = function() { };
-
-		/**
-		 * Parses to an integer number the passed element
-		 * Parsing rules:
-		 *
-		 * empty object 			  - 0
-		 * not empty object 		  - 1
-		 * number < 0 				  - 0
-		 * number > 0 				  - number value
-		 * empty string 			  - 0
-		 * not empty string 		  - string value
-		 * true 					  - 1
-		 * undefined || null || false - 0
-		 *
-		 * @function toNumber
-		 * @param {Object|function|number|string|boolean|*[]} n
-		 * @memberof Utils
-		 * @public
-		 * @returns {number} casted from n.
-		 * @see Object.prototype.isEmpty()
-		 * @see String.prototype.toNumber()
-		 */
-		Utils.prototype.toNumber = function( n ) {
-			n = checkFn( n );
-
-			switch( typeof n ) {
-				case 'object'   : return n === null || n.isEmpty() ? 0 : n.length ? n.length : 1;
-				case 'number'   : return n < 0 ? 0 : n;
-				case 'string'   : return n.toNumber();
-				case 'boolean'  : return n ? 1 : 0;
-				default		    : return 0;
-			}
-		};
-
-		return Utils;
-	})();
-
-	/**
 	 * Parses to number the current string value
 	 *
 	 * @function toNumber
@@ -183,81 +126,193 @@
 	};
 
 	/**
-	 * Checks if the current object is empty
+	 * Defines new methods for Object class
 	 *
-	 * @function isEmpty
+	 * @param {Object} Object.prototype 	  - Object to extend
+	 * @param {Object} properties descriptors - A collection of configurations which will extend the object
+	 * @function defineProperties
 	 * @memberof Object
 	 * @global
-	 * @returns {boolean} false if the object is empty | true otherwise
-	 * @see Object.keys()
+	 * @see Object.defineProperty()
 	 */
-	Object.prototype.isEmpty = function() {
-		return !Object.keys( this ).length;
-	};
+	Object.defineProperties( Object.prototype, {
 
-	/**
-	 * Extends the current object is with the passad one
-	 *
-	 * @param {Object} obj
-	 * @param {boolean} owrr
-	 * @function extend
-	 * @memberof Object
-	 * @global
-	 */
-	Object.prototype.extend = function( obj, owrr ) {
-		var ext = { };
-		obj  = checkFn( obj );
-		owrr = checkFn( owrr );
+		/**
+		 * @param {boolean} writable
+		 * @default [false]
+		 * @description Set to 'true' only if the value associated with the property
+		 *				may be changed with an assignment operator (=).
+		 *
+		 * @param {boolean} enumerable
+		 * @default [false]
+		 * @description Set to 'true' only if this property shows up during enumeration
+		 *				of the properties on the extended object.
+		 *
+		 * @param {boolean} configurable
+		 * @default [false]
+		 * @description Set to 'true' only if this property descriptor may be changed
+		 *				and if the property may be deleted from the extended object.
+		 *
+		 * @param {function} set
+		 * @default [undefined]
+		 * @description The function will receive as only argument the new value to be assigned to the property.
+		 *
+		 * @param {function} get
+		 * @default [undefined]
+		 * @description The function will return the value of property.
+		 *
+		 * @param {*} value
+		 * @default [undefined]
+		 * @description The value associated with the property.
+		 */
+		'isEmpty': {
+			writable: true,
 
-		if( typeof obj !== 'object' ) { console.error( 'Element \'' + obj + '\' is not an object.' ); return; }
+			/**
+			 * Checks if the current object is empty
+			 *
+			 * @function isEmpty
+			 * @memberof Object
+			 * @global
+			 * @returns {boolean} false if the object is empty | true otherwise
+			 * @see Object.keys()
+			 */
+			value: function() {
+				return !Object.keys( this ).length;
+			}
+		},
 
-		for( var i in obj ) {
-			// if( typeof obj[i] !== 'function' )
-			
-			if( this[i] !== undefined && owrr ) console.warn( 'Element \'' + i + '\' was overwritten becaus already existed.' );
-			else if( this[i] !== undefined ) { console.error( 'Element \'' + i + '\' already exist.' ); return; }
-			ext[i] = obj[i];
+		'extend': {
+			writable: true,
+
+			/**
+			 * Extends the current object is with the passad one
+			 *
+			 * @param {Object} obj
+			 * @param {boolean} owrr
+			 * @function extend
+			 * @memberof Object
+			 * @global
+			 */
+			value: function( obj, owrr ) {
+				var ext = { };
+				obj  = checkFn( obj );
+				owrr = checkFn( owrr );
+
+				if( typeof obj !== 'object' ) { console.error( 'Element \'' + obj + '\' is not an object.' ); return; }
+
+				for( var i in obj ) {					
+					if( this[i] !== undefined && owrr ) console.warn( 'Element \'' + i + '\' was overwritten becaus already existed.' );
+					else if( this[i] !== undefined ) { console.error( 'Element \'' + i + '\' already exist.' ); return; }
+					ext[i] = obj[i];
+				}
+
+				for( var i in ext ) this[i] = ext[i];
+			}
+		},
+
+		'getProperties': {
+			writable: true,
+
+			/**
+			 * Gets the list of object's properties (functions excluded)
+			 *
+			 * @function getProperties
+			 * @memberof Object
+			 * @global
+			 * @returns {string[]} array of properties' names
+			 * @see Object.getOwnPropertyNames()
+			 */
+			value: function() {
+				var prop = [];
+
+				for( var i in this )
+					if( typeof this[i] !== 'function' )
+						prop.push( i );
+
+				return prop;
+			}
+		},
+
+		'getMethods': {
+			writable: true,
+
+			/**
+			 * Gets the list of object's functions
+			 *
+			 * @function getMethods
+			 * @memberof Object
+			 * @global
+			 * @returns {string[]} array of functions' names
+			 * @see Object.getOwnPropertyNames()
+			 */
+			value: function() {
+				var prop = [];
+
+				for( var i in this )
+					if( typeof this[i] === 'function' )
+						prop.push( i );
+
+				return prop;
+			}
 		}
-
-		for( var i in ext ) this[i] = ext[i];
-	};
+	});
 
 	/**
-	 * Gets the list of object's properties (functions excluded)
+	 * Utils class definition
 	 *
-	 * @function getProperties
-	 * @memberof Object
+	 * @namespace {Class} Utils
+	 * @class
+	 * @classdesc This is the core of JSUtils library
+	 * @constructs Utils
 	 * @global
-	 * @returns {string[]} array of properties' names
-	 * @see Object.getOwnPropertyNames()
 	 */
-	Object.prototype.getProperties = function() {
-		var prop = [];
+	var Utils = (function() {
 
-		for( var i in this )
-			if( typeof this[i] !== 'function' )
-				prop.push( i );
+		/**
+		 * Utils class constructor function
+		 *
+		 * @lends Utils.prototype
+		 * @function Utils
+		 * @memberof Utils
+		 * @global
+		 */
+		var Utils = function() { };
 
-		return prop;
-	};
+		/**
+		 * Parses to an integer number the passed element
+		 * Parsing rules:
+		 *
+		 * empty object 			  - 0
+		 * not empty object 		  - 1
+		 * number < 0 				  - 0
+		 * number > 0 				  - number value
+		 * empty string 			  - 0
+		 * not empty string 		  - string value
+		 * true 					  - 1
+		 * undefined || null || false - 0
+		 *
+		 * @function toNumber
+		 * @param {Object|function|number|string|boolean|*[]} n
+		 * @memberof Utils
+		 * @public
+		 * @returns {number} casted from n.
+		 * @see Object.prototype.isEmpty()
+		 * @see String.prototype.toNumber()
+		 */
+		Utils.prototype.toNumber = function( n ) {
+			n = checkFn( n );
 
-	/**
-	 * Gets the list of object's functions
-	 *
-	 * @function getMethods
-	 * @memberof Object
-	 * @global
-	 * @returns {string[]} array of functions' names
-	 * @see Object.getOwnPropertyNames()
-	 */
-	Object.prototype.getMethods = function() {
-		var prop = [];
+			switch( typeof n ) {
+				case 'object'   : return n === null || n.isEmpty() ? 0 : n.length ? n.length : 1;
+				case 'number'   : return n < 0 ? 0 : n;
+				case 'string'   : return n.toNumber();
+				case 'boolean'  : return n ? 1 : 0;
+				default		    : return 0;
+			}
+		};
 
-		for( var i in this )
-			if( typeof this[i] === 'function' )
-				prop.push( i );
-
-		return prop;
-	};
+		return Utils;
+	})();
 
 })();
