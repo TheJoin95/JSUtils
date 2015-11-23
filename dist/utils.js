@@ -10,7 +10,10 @@
  * Date: 2015-11-21T13:28Z
  */
 
-;(function() {
+// Utils Class Export:
+;var Utils;
+
+(function() {
 	'use strict';
 
 	/**
@@ -93,8 +96,8 @@
 		if( typeof i1 === 'string' && i1 !== '' ) e1 = i1.toNumber();
 		if( typeof i2 === 'string' && i2 !== '' ) e2 = i2.toNumber();
 
-		if( e1 === -1 || this[i1] === undefined ) { console.error( 'No element with index \'' + i1 + '\' was found in array.' ); return; }
-		if( e2 === -1 || this[i2] === undefined ) { console.error( 'No element with index \'' + i2 + '\' was found in array.' ); return; }
+		if( e1 === -1 || this[i1] === undefined ) { throw new Error( 'No element with index \'' + i1 + '\' was found in array.' ); return; }
+		if( e2 === -1 || this[i2] === undefined ) { throw new Error( 'No element with index \'' + i2 + '\' was found in array.' ); return; }
 
 		var e = this[i1];
 		this[i1] = this[i2];
@@ -119,8 +122,8 @@
 			if 	   ( this[i] === v1 ) i1 = i;
 			else if( this[i] === v2 ) i2 = i;
 
-		if( i1 === null ) { console.error( 'No element with value \'' + v1 + '\' was found in array.' ); return; }
-		if( i2 === null ) { console.error( 'No element with value \'' + v2 + '\' was found in array.' ); return; }
+		if( i1 === null ) { throw new Error( 'No element with value \'' + v1 + '\' was found in array.' ); return; }
+		if( i2 === null ) { throw new Error( 'No element with value \'' + v2 + '\' was found in array.' ); return; }
 
 		this.swapByIndex( i1, i2 );
 	};
@@ -129,7 +132,7 @@
 	 * Defines new methods for Object class
 	 *
 	 * @param {Object} Object.prototype 	  - Object to extend
-	 * @param {Object} properties descriptors - A collection of configurations which will extend the object
+	 * @param {Object} properties descriptors - A collection of configurations which describe new properties
 	 * @function defineProperties
 	 * @memberof Object
 	 * @global
@@ -199,11 +202,11 @@
 				obj  = checkFn( obj );
 				owrr = checkFn( owrr );
 
-				if( typeof obj !== 'object' ) { console.error( 'Element \'' + obj + '\' is not an object.' ); return; }
+				if( typeof obj !== 'object' ) { throw new Error( 'Element \'' + obj + '\' is not an object.' ); return; }
 
 				for( var i in obj ) {					
 					if( this[i] !== undefined && owrr ) console.warn( 'Element \'' + i + '\' was overwritten becaus already existed.' );
-					else if( this[i] !== undefined ) { console.error( 'Element \'' + i + '\' already exist.' ); return; }
+					else if( this[i] !== undefined ) { throw new Error( 'Element \'' + i + '\' already exist.' ); return; }
 					ext[i] = obj[i];
 				}
 
@@ -221,7 +224,7 @@
 			 * @memberof Object
 			 * @global
 			 * @returns {string[]} array of properties' names
-			 * @see Object.getOwnPropertyNames()
+			 * @see Object.prototype.getOwnPropertyNames()
 			 */
 			value: function() {
 				var prop = [];
@@ -244,7 +247,7 @@
 			 * @memberof Object
 			 * @global
 			 * @returns {string[]} array of functions' names
-			 * @see Object.getOwnPropertyNames()
+			 * @see Object.prototype.getOwnPropertyNames()
 			 */
 			value: function() {
 				var prop = [];
@@ -255,6 +258,61 @@
 
 				return prop;
 			}
+		},
+
+		'hasOwnValue': {
+			writable: true,
+
+			/**
+			 * Checks if the passed value is present in object
+			 *
+			 * @function hasOwnValue
+			 * @memberof Object
+			 * @global
+			 * @returns {boolean} true if at least one property equals to val | false otherwise
+			 * @see Object.prototype.hasOwnProperty()
+			 */
+			value: function( val ) {
+				val = checkFn( val );
+
+				for( var p in this )
+					if( this[p] === val )
+						return true;
+
+				return false;
+			}
+		}
+	});
+
+	/**
+	 * Defines new method for Object class
+	 *
+	 * @param {Object} Object 	  			- Object to extend
+	 * @param {string} getOwnPropertyValues - New property name
+	 * @param {Object} property descriptor  - A collection of configurations which describe new property
+	 * @function defineProperty
+	 * @memberof Object
+	 * @global
+	 */
+	Object.defineProperty( Object, 'getOwnPropertyValues', {
+		writable: true,
+
+		/**
+		 * Gets an array of all properties' values of the object
+		 *
+		 * @function getOwnPropertyValues
+		 * @memberof Object
+		 * @global
+		 * @returns {*[]} object properties' values
+		 * @see Object.getOwnPropertyNames()
+		 */
+		value: function( obj ) {
+			obj = checkFn( obj );
+			if( typeof obj !== 'object' ) { throw new Error( '\'' + obj + '\' is not an object.' ); return; }
+
+			var vals = [];
+			for( var o in obj ) vals.push( obj[o] );
+			return vals;
 		}
 	});
 
@@ -267,12 +325,13 @@
 	 * @constructs Utils
 	 * @global
 	 */
-	var Utils = (function() {
+	Utils = (function() {
 
 		/**
 		 * Utils class constructor function
 		 *
 		 * @lends Utils.prototype
+		 * @constructs Utils
 		 * @function Utils
 		 * @memberof Utils
 		 * @global
