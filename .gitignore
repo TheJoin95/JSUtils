@@ -1,5 +1,3 @@
-dist/require.min.js
+node_modules/
 test/Core.js
-compile.conf
-var/*.js
 *.txt
