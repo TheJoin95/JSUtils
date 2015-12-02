@@ -1,5 +1,5 @@
-define([
-	'../init'
+require([
+	'src/var/init.js'
 ],
 
 function( checkFn ) {

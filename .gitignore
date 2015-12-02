@@ -1,3 +1,5 @@
 dist/require.min.js
 test/Core.js
+compile.conf
+var/*.js
 *.txt

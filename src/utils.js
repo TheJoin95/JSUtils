@@ -1,11 +1,11 @@
 requirejs.config({
-    baseUrl: './src',
+    baseUrl: './',
     paths: { }
 });
 
 requirejs([
-	'core/string',
-	'core/array',
-	'core/object',
-	'lib'
+	'src/core/string',
+	'src/core/array',
+	'src/core/object',
+	'src/lib'
 ]);

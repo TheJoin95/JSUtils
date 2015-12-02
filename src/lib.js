@@ -19,7 +19,7 @@
 		return;
 	}
 
-    define(['init'], function( checkFn ) {
+    require(['src/var/init'], function( checkFn ) {
 
 	    /**
 		 * Utils class definition
