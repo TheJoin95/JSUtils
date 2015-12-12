@@ -7,7 +7,7 @@
  * @author Ustym Ukhman <ustym.ukhman@gmail.com>
  * @license MIT License, https://github.com/UstymUkhman/JSUtils/blob/master/LICENSE
  *
- * Date: 02-12-2015 11:47:03 PM GMT+0100
+ * Date: 12-12-2015 9:16:12 AM GMT+0100
  */
 
 
@@ -334,6 +334,23 @@ String.prototype.replaceAll = function( f, r, c ) {
 	if( typeof r !== 'string' || !r ) { c = r; r = ''; }
 	var that = this, s = this.split( f ).join( r );
 	return c ? that === this ? -1 : s : s;
+};
+
+/**
+ * Remove all spaces from string
+ * If 'f' is true, '\t' characters will be removed too
+ * String.trim() doesn't work if string is an array element
+ *
+ * @param {boolean} f
+ * @function trim
+ * @memberof String
+ * @global
+ * @returns {string} the current string without spaces [and '\t' characters].
+ * @see String.trim()
+ */
+String.prototype.trim = function( f ) {
+	f = checkFn( f );
+    return f ? this.replaceAll( '\t', '' ).trim() : this.replaceAll( ' ', '' );
 };
 
 

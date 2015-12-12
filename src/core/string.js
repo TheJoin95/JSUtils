@@ -48,3 +48,20 @@ String.prototype.replaceAll = function( f, r, c ) {
 	var that = this, s = this.split( f ).join( r );
 	return c ? that === this ? -1 : s : s;
 };
+
+/**
+ * Remove all spaces from string
+ * If 'f' is true, '\t' characters will be removed too
+ * String.trim() doesn't work if string is an array element
+ *
+ * @param {boolean} f
+ * @function trim
+ * @memberof String
+ * @global
+ * @returns {string} the current string without spaces [and '\t' characters].
+ * @see String.trim()
+ */
+String.prototype.trim = function( f ) {
+	f = checkFn( f );
+    return f ? this.replaceAll( '\t', '' ).trim() : this.replaceAll( ' ', '' );
+};
