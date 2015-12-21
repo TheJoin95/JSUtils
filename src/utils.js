@@ -170,6 +170,53 @@
 			}
 		};
 
+		/* 
+		* check if the obj has type function
+		* functions are first level variables
+		* they have same primitive methods like other simple var
+		* 
+		* @function isFunction
+		* @param {everything}
+		* @memberof Utils
+		* @public
+		* @returns {boolean}.
+		**/
+		Utils.prototype.isFunction = function( obj ) {
+			return typeof( obj ) === "function";
+		};
+
+
+		/* 
+		* check if obj is type window
+		* like global variables without a real scope
+		* 
+		* @function isWindow
+		* @param {everything}
+		* @memberof Utils
+		* @public
+		* @returns {boolean}.
+		**/
+		Utils.prototype.isWindow = function( obj ) {
+			return obj != null && obj === obj.window;
+		};
+		
+		/* 
+		* isNumeric, like isNumeric of Php
+		* check if a (casting to float)string or a number
+		* has got a numeric part
+		* 
+		* @function isNumeric
+		* @param {everything}
+		* @memberof Utils
+		* @public
+		* @returns {boolean}.
+		**/
+		Utils.prototype.isNumeric = function( obj ) {
+			var type = typeof( obj );
+			return ( type === "number" || type === "string" ) &&
+				( obj - parseFloat( obj ) + 1 ) >= 0;
+		};
+
 		return Utils;
 	})();
 

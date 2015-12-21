@@ -174,6 +174,38 @@ Object.defineProperties( Object.prototype, {
 
 			return false;
 		}
+	},
+	'isPlainObject': {
+		writable: true,
+		/**
+		* Jquery style
+		* Checks if obj is a plain Object
+		* plain != empty [we can try a merge with these func]
+		*
+		* @function isPlainObject
+		* @memberof Object
+		* @global
+		* @returns {boolean} true if obj is only literal {} or created bu new Object | false otherwise
+		* @see Object.prototype.constructor
+		* Not plain objects:
+		* - Any object or value whose internal [[Class]] property is not "[object Object]"
+		* - DOM nodes
+		* - window
+		**/
+		value: function( obj ) {
+			if ( typeof( obj ) !== "object" || obj.nodeType || jQuery.isWindow( obj ) ) {
+				return false;
+			}
+
+			if ( obj.constructor &&
+					!hasOwn.call( obj.constructor.prototype, "isPrototypeOf" ) ) {
+				return false;
+			}
+
+			// If the function hasn't returned already, we're confident that
+			// |obj| is a plain object, created by {} or constructed with new Object
+			return true;
+		}
 	}
 });
 
